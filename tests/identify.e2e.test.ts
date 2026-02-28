@@ -217,6 +217,28 @@ describe('POST /identify - Request Validation', () => {
         })
         expect(res.status).toBe(400)
     })
+
+    test('returns 400 when email format is invalid', async () => {
+        const invalidEmails = [
+            "plainaddress",          // No @
+            "#@%^%#$@#$@#.com",      // Garbage/Symbols
+            "@example.com",          // Missing username
+            "email.example.com",     // Missing @
+            "email@example@com",     // Double @ or missing TLD dot
+            "email@example",         // Missing TLD (.com, .net)
+            ".email@example.com",    // Leading dot
+            "email@-example.com",    // Invalid domain start
+        ]
+
+        for (const email of invalidEmails) {
+            const res = await identify({
+                email: email,
+                phoneNumber: null,
+            })
+            expect(res.status).toBe(400)
+        }
+    })
+
 })
 
 // concurrency

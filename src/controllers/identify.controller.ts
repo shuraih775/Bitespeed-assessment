@@ -1,6 +1,7 @@
 import { Request, Response } from 'express'
 import { identifyService } from '../services/identity.service'
 
+const EMAIL_REGEX = /^[a-zA-Z0-9](?:[^\s@]*[a-zA-Z0-9])?@[a-zA-Z]+\.[a-zA-Z]+$/;
 export async function identifyController(
     req: Request,
     res: Response
@@ -25,6 +26,9 @@ export async function identifyController(
 
         if (typeof rawEmail === 'string') {
             const trimmed = rawEmail.trim().toLowerCase()
+            if (trimmed !== '' && !EMAIL_REGEX.test(trimmed)) {
+                return res.status(400).json({ error: 'email must be in valid format' })
+            }
             if (trimmed !== '') email = trimmed
         }
 
